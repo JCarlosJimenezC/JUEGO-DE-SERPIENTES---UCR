@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serpientes de Costa Rica - Encuentra la Pareja</title>
+    <style>
+        :root {
+            --bg: #0d1f0d;
+            --bg2: #142414;
+            --green-dark: #1e4020;
+            --green-mid: #2d6a4f;
+            --green-light: #52b788;
+            --accent: #95d44a;
+            --red-dark: #5a0000;
+            --red-mid: #8b1a1a;
+            --red-accent: #ff4444;
+            --text: #e8f5e9;
+            --text-dim: #a5c8a5;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(45,106,79,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(30,64,32,0.2) 0%, transparent 50%);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header */
+        .site-header {
+            text-align: center;
+            padding: 1.2rem 1rem 0.5rem;
+            width: 100%;
+        }
+
+        .site-header h1 {
+            font-size: 1.9rem;
+            color: var(--accent);
+            text-shadow: 0 0 30px rgba(149,212,74,0.4);
+            letter-spacing: 1px;
+        }
+
+        .site-header p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+        }
+
+        /* Screens */
+        .screen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 960px; padding: 0.8rem 1rem; }
+        .screen.active { display: flex; }
+
+        /* ── START SCREEN ── */
+        .start-intro {
+            background: rgba(30,64,32,0.4);
+            border: 1px solid rgba(149,212,74,0.2);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            max-width: 540px;
+            text-align: center;
+            margin-bottom: 1.2rem;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .start-intro span.ven { color: #ff7070; }
+        .start-intro span.nov { color: var(--accent); }
+
+        /* Buttons */
+        .btn {
+            padding: 11px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s, opacity 0.15s;
+            letter-spacing: 0.5px;
+        }
+        .btn:hover { transform: scale(1.05); }
+        .btn:active { transform: scale(0.97); }
+        .btn-green { background: var(--accent); color: #0d1f0d; }
+        .btn-red   { background: #8b0000; color: #fff; }
+        .btn-gray  { background: #334433; color: var(--text); }
+
+        /* Ranking */
+        .ranking-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.2rem 0 0.6rem;
+        }
+        .ranking-header h2 { color: var(--accent); font-size: 1.3rem; }
+
+        .ranking-table-wrap { width: 100%; overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+        th {
+            padding: 8px 10px;
+            color: var(--accent);
+            border-bottom: 2px solid rgba(149,212,74,0.3);
+            text-align: left;
+            white-space: nowrap;
+        }
+        td {
+            padding: 7px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        tr:hover td { background: rgba(149,212,74,0.05); }
+        .medal-1 { color: #ffd700; font-size: 1.1rem; }
+        .medal-2 { color: #c0c0c0; font-size: 1.1rem; }
+        .medal-3 { color: #cd7f32; font-size: 1.1rem; }
+        .tag-complete   { background: rgba(149,212,74,0.2); color: var(--accent); padding: 2px 8px; border-radius: 20px; font-size: 0.78rem; }
+        .tag-incomplete { background: rgba(255,100,100,0.15); color: #ff9090; padding: 2px 8px; border-radius: 20px; font-size: 0.78rem; }
+
+        .no-scores { color: var(--text-dim); text-align: center; padding: 1.5rem; font-size: 0.95rem; }
+
+        /* ── GAME SCREEN ── */
+        #hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0.4rem 0.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        #timer {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+            min-width: 80px;
+            text-align: center;
+            transition: color 0.3s;
+            font-variant-numeric: tabular-nums;
+        }
+        #timer.warn { color: #ff6b6b; animation: pulse 0.8s infinite alternate; }
+
+        @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
+
+        #pairs-hud {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+        }
+        #pairs-hud strong { color: var(--accent); }
+
+        /* Grid */
+        #game-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            width: 100%;
+        }
+
+        /* Cards */
+        .card {
+            aspect-ratio: 0.68;
+            cursor: pointer;
+            perspective: 900px;
+            user-select: none;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+            border-radius: 10px;
+        }
+
+        .card.flipped .card-inner,
+        .card.matched .card-inner { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            overflow: hidden;
+        }
+
+        /* Card back */
+        .card-back {
+            background: var(--green-dark);
+            border: 2px solid rgba(149,212,74,0.35);
+            background-image:
+                repeating-linear-gradient(45deg, rgba(149,212,74,0.04) 0px, rgba(149,212,74,0.04) 2px, transparent 2px, transparent 12px),
+                repeating-linear-gradient(-45deg, rgba(149,212,74,0.04) 0px, rgba(149,212,74,0.04) 2px, transparent 2px, transparent 12px);
+        }
+
+        .card-back-icon {
+            font-size: 2rem;
+            line-height: 1;
+            margin-bottom: 4px;
+            filter: drop-shadow(0 0 6px rgba(149,212,74,0.5));
+        }
+
+        .card-back-label {
+            font-size: 0.5rem;
+            color: rgba(149,212,74,0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        /* Card front */
+        .card-front {
+            transform: rotateY(180deg);
+            text-align: center;
+        }
+
+        .card-front.venenosa {
+            background: linear-gradient(160deg, #4a0000 0%, #7a1010 100%);
+            border: 2px solid rgba(255,80,80,0.5);
+        }
+
+        .card-front.no-venenosa {
+            background: linear-gradient(160deg, #133320 0%, #1e5c3a 100%);
+            border: 2px solid rgba(149,212,74,0.4);
+        }
+
+        .card-badge {
+            font-size: 0.48rem;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .venenosa .card-badge   { background: rgba(255,80,80,0.25); color: #ff9090; border: 1px solid rgba(255,80,80,0.4); }
+        .no-venenosa .card-badge { background: rgba(149,212,74,0.2); color: var(--accent); border: 1px solid rgba(149,212,74,0.4); }
+
+        .card-emoji { font-size: 1.3rem; margin-bottom: 4px; }
+
+        .card-nombre {
+            font-size: 0.63rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+            margin-bottom: 3px;
+        }
+
+        .card-cientifico {
+            font-size: 0.5rem;
+            font-style: italic;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.3;
+        }
+
+        /* Matched glow */
+        .card.matched .card-front {
+            box-shadow: 0 0 18px rgba(255,215,0,0.4), inset 0 0 10px rgba(255,215,0,0.1);
+            border-color: rgba(255,215,0,0.5) !important;
+        }
+
+        /* ── END SCREEN ── */
+        .end-box {
+            background: rgba(30,64,32,0.4);
+            border: 1px solid rgba(149,212,74,0.25);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 440px;
+            width: 100%;
+        }
+
+        .end-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+        .end-title { font-size: 1.6rem; font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; }
+        .end-subtitle { color: var(--text-dim); margin-bottom: 1.2rem; font-size: 1rem; }
+
+        .end-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            min-width: 90px;
+        }
+        .stat-value { font-size: 1.5rem; font-weight: 900; color: var(--accent); }
+        .stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .name-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .name-row input {
+            padding: 9px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(149,212,74,0.3);
+            background: rgba(0,0,0,0.4);
+            color: var(--text);
+            font-size: 1rem;
+            width: 180px;
+            outline: none;
+        }
+        .name-row input:focus { border-color: var(--accent); }
+
+        .btn-row {
+            display: flex;
+            gap: 0.7rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .site-header h1 { font-size: 1.3rem; }
+            #game-grid { grid-template-columns: repeat(4, 1fr); gap: 5px; }
+            .end-stats { gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <h1>🐍 Serpientes de Costa Rica</h1>
+    <p>Encuentra la Pareja &mdash; UCR</p>
+</header>
+
+<!-- ── START SCREEN ── -->
+<div id="start-screen" class="screen active">
+    <div class="start-intro">
+        Encuentra las <strong>12 parejas</strong> de serpientes en <strong>3 minutos</strong>.<br>
+        Cada partida usa <strong>cartas aleatorias</strong> de la lista completa.<br><br>
+        <span class="ven">&#9888; Rojo = Venenosa</span> &nbsp;|&nbsp; <span class="nov">&#10003; Verde = No venenosa</span>
+    </div>
+
+    <button class="btn btn-green" onclick="startGame()">&#9654; Nueva Partida</button>
+
+    <div class="ranking-header">
+        <h2>&#127942; Ranking</h2>
+        <button class="btn btn-red" style="font-size:0.78rem; padding:6px 14px;" onclick="clearRanking()">Borrar</button>
+    </div>
+    <div class="ranking-table-wrap" id="ranking-container"></div>
+</div>
+
+<!-- ── GAME SCREEN ── -->
+<div id="game-screen" class="screen">
+    <div id="hud">
+        <div>
+            <div id="timer">3:00</div>
+        </div>
+        <div id="pairs-hud">Parejas: <strong id="pairs-val">0</strong>/12</div>
+        <button class="btn btn-gray" style="font-size:0.85rem; padding:7px 16px;" onclick="goHome()">&#8592; Menú</button>
+    </div>
+    <div id="game-grid"></div>
+</div>
+
+<!-- ── END SCREEN ── -->
+<div id="end-screen" class="screen">
+    <div class="end-box">
+        <div class="end-icon" id="end-icon">&#127881;</div>
+        <div class="end-title" id="end-title"></div>
+        <div class="end-subtitle" id="end-subtitle"></div>
+
+        <div class="end-stats">
+            <div class="stat-box">
+                <div class="stat-value" id="stat-pairs">0</div>
+                <div class="stat-label">Parejas</div>
+            </div>
+            <div class="stat-box" id="stat-time-box">
+                <div class="stat-value" id="stat-time">-</div>
+                <div class="stat-label">Tiempo</div>
+            </div>
+        </div>
+
+        <div class="name-row">
+            <input id="player-name" type="text" maxlength="20" placeholder="Tu nombre..." />
+            <button class="btn btn-green" onclick="saveScore()">Guardar</button>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-green" onclick="startGame()">&#9654; Jugar de nuevo</button>
+            <button class="btn btn-gray" onclick="goHome()">&#127942; Ver Ranking</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const ALL_SNAKES = [
+    // Venenosas
+    { nombre: "Terciopelo",                  cientifico: "Bothrops asper",            venenosa: true  },
+    { nombre: "Bocaracá u Oropel",           cientifico: "Bothriechis schlegelii",    venenosa: true  },
+    { nombre: "Bocaracá de Altura",          cientifico: "Bothriechis lateralis",     venenosa: true  },
+    { nombre: "Toboba",                      cientifico: "Porthidium ophryomegas",    venenosa: true  },
+    { nombre: "Mano de Piedra",              cientifico: "Atropoides mexicanus",      venenosa: true  },
+    { nombre: "Matabuey",                    cientifico: "Lachesis stenophrys",       venenosa: true  },
+    { nombre: "Cascabel Centroamericana",    cientifico: "Crotalus simus",            venenosa: true  },
+    { nombre: "Corales Verdaderas",          cientifico: "Micrurus spp.",             venenosa: true  },
+    { nombre: "Serpiente Marina",            cientifico: "Hydrophis platurus",        venenosa: true  },
+    // No venenosas
+    { nombre: "Boa",                         cientifico: "Boa imperator",             venenosa: false },
+    { nombre: "Mica",                        cientifico: "Spilotes pullatus",         venenosa: false },
+    { nombre: "Bejuquilla",                  cientifico: "Imantodes cenchoa",         venenosa: false },
+    { nombre: "Bejuquilla Verde",            cientifico: "Leptophis mexicanus",       venenosa: false },
+    { nombre: "Falsa Coral",                 cientifico: "Erythrolamprus mimus",      venenosa: false },
+    { nombre: "Falsa Coral Rey",             cientifico: "Lampropeltis micropholis",  venenosa: false },
+    { nombre: "Platanera",                   cientifico: "Ninia sebae",               venenosa: false },
+    { nombre: "Ratonera",                    cientifico: "Senticolis triaspis",       venenosa: false },
+    { nombre: "Sabanera Verde",              cientifico: "Drymobius margaritiferus",  venenosa: false },
+    { nombre: "Sabanera Café",               cientifico: "Drymarchon melanurus",      venenosa: false },
+    { nombre: "Tamagá Verde",               cientifico: "Dryadophis dorsalis",       venenosa: false },
+    { nombre: "Culebras de Agua",            cientifico: "Tretanorhinus spp.",        venenosa: false },
+    { nombre: "Culebras Caracoleras",        cientifico: "Sibon spp.",                venenosa: false },
+    { nombre: "Culebras Come-babosas",       cientifico: "Dipsas spp.",               venenosa: false },
+];
+
+const TOTAL_PAIRS  = 12;
+const GAME_SECONDS = 180;
+
+let gameCards    = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let canFlip      = true;
+let timerInterval = null;
+let timeLeft     = GAME_SECONDS;
+let gameActive   = false;
+let lastResult   = null;
+
+// ── Utils ──────────────────────────────────────────────────────────────
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function fmtTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+// ── Game logic ─────────────────────────────────────────────────────────
+function startGame() {
+    clearInterval(timerInterval);
+
+    const selected = shuffle(ALL_SNAKES).slice(0, TOTAL_PAIRS);
+    gameCards = shuffle([...selected, ...selected].map((s, i) => ({ ...s, uid: i })));
+
+    matchedPairs = 0;
+    flippedCards = [];
+    canFlip      = true;
+    timeLeft     = GAME_SECONDS;
+    gameActive   = true;
+    lastResult   = null;
+
+    renderGrid();
+    showScreen('game-screen');
+    updateHUD();
+    timerInterval = setInterval(tick, 1000);
+}
+
+function renderGrid() {
+    const grid = document.getElementById('game-grid');
+    grid.innerHTML = '';
+
+    gameCards.forEach((snake, idx) => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.dataset.idx = idx;
+
+        const emoji = snake.venenosa ? '☠️' : '🌿';
+
+        el.innerHTML = `
+            <div class="card-inner">
+                <div class="card-face card-back">
+                    <div class="card-back-icon">🐍</div>
+                    <div class="card-back-label">Serpientes<br>Costa Rica</div>
+                </div>
+                <div class="card-face card-front ${snake.venenosa ? 'venenosa' : 'no-venenosa'}">
+                    <div class="card-badge">${snake.venenosa ? '⚠ Venenosa' : '✓ No Venenosa'}</div>
+                    <div class="card-emoji">${emoji}</div>
+                    <div class="card-nombre">${snake.nombre}</div>
+                    <div class="card-cientifico">${snake.cientifico}</div>
+                </div>
+            </div>`;
+
+        el.addEventListener('click', () => flipCard(el, idx));
+        grid.appendChild(el);
+    });
+}
+
+function flipCard(el, idx) {
+    if (!canFlip || !gameActive) return;
+    if (el.classList.contains('flipped') || el.classList.contains('matched')) return;
+    if (flippedCards.length >= 2) return;
+
+    el.classList.add('flipped');
+    flippedCards.push({ el, idx, nombre: gameCards[idx].nombre });
+
+    if (flippedCards.length === 2) {
+        canFlip = false;
+        setTimeout(checkMatch, 900);
+    }
+}
+
+function checkMatch() {
+    const [a, b] = flippedCards;
+
+    if (a.nombre === b.nombre) {
+        a.el.classList.add('matched');
+        b.el.classList.add('matched');
+        matchedPairs++;
+        updateHUD();
+
+        if (matchedPairs === TOTAL_PAIRS) {
+            endGame(true);
+        }
+    } else {
+        a.el.classList.remove('flipped');
+        b.el.classList.remove('flipped');
+    }
+
+    flippedCards = [];
+    canFlip = true;
+}
+
+function tick() {
+    timeLeft--;
+    updateHUD();
+    if (timeLeft <= 0) endGame(false);
+}
+
+function updateHUD() {
+    const el = document.getElementById('timer');
+    el.textContent = fmtTime(timeLeft);
+    el.className = timeLeft <= 30 ? 'warn' : '';
+    document.getElementById('pairs-val').textContent = matchedPairs;
+}
+
+function endGame(completed) {
+    clearInterval(timerInterval);
+    gameActive = false;
+
+    const timeUsed = GAME_SECONDS - timeLeft;
+    lastResult = { completed, pairs: matchedPairs, timeUsed };
+
+    document.getElementById('end-icon').textContent    = completed ? '🎉' : '⏰';
+    document.getElementById('end-title').textContent   = completed ? '¡Todas las parejas!' : '¡Se acabó el tiempo!';
+    document.getElementById('end-subtitle').textContent = completed
+        ? 'Completaste el juego. ¡Excelente memoria!'
+        : `Encontraste ${matchedPairs} de 12 parejas.`;
+
+    document.getElementById('stat-pairs').textContent = `${matchedPairs}/12`;
+    document.getElementById('stat-time').textContent  = completed ? fmtTime(timeUsed) : '-';
+
+    document.getElementById('player-name').value = '';
+    showScreen('end-screen');
+}
+
+// ── Ranking ────────────────────────────────────────────────────────────
+function getRanking() {
+    try { return JSON.parse(localStorage.getItem('ucr_snakes_ranking')) || []; }
+    catch { return []; }
+}
+
+function saveScore() {
+    if (!lastResult) { goHome(); return; }
+
+    const name = document.getElementById('player-name').value.trim() || 'Anónimo';
+    const ranking = getRanking();
+    ranking.push({
+        name,
+        pairs:     lastResult.pairs,
+        timeUsed:  lastResult.timeUsed,
+        completed: lastResult.completed,
+        date:      new Date().toLocaleDateString('es-CR'),
+    });
+    localStorage.setItem('ucr_snakes_ranking', JSON.stringify(ranking));
+    lastResult = null;
+    goHome();
+}
+
+function clearRanking() {
+    if (!confirm('¿Borrar todo el ranking?')) return;
+    localStorage.removeItem('ucr_snakes_ranking');
+    renderRanking();
+}
+
+function renderRanking() {
+    const container = document.getElementById('ranking-container');
+    const ranking   = getRanking();
+
+    if (ranking.length === 0) {
+        container.innerHTML = '<div class="no-scores">Aún no hay puntajes. ¡Sé el primero!</div>';
+        return;
+    }
+
+    const sorted = [...ranking].sort((a, b) => {
+        if (a.completed && !b.completed) return -1;
+        if (!a.completed && b.completed) return  1;
+        if (a.completed  &&  b.completed) return a.timeUsed - b.timeUsed;
+        return b.pairs - a.pairs;
+    });
+
+    const medals = ['<span class="medal-1">🥇</span>', '<span class="medal-2">🥈</span>', '<span class="medal-3">🥉</span>'];
+
+    let rows = sorted.slice(0, 20).map((e, i) => {
+        const timeStr = e.completed ? fmtTime(e.timeUsed) : '-';
+        const tag = e.completed
+            ? '<span class="tag-complete">Completo</span>'
+            : '<span class="tag-incomplete">Incompleto</span>';
+        const pos = medals[i] || `<span style="color:var(--text-dim)">${i+1}</span>`;
+
+        return `<tr>
+            <td>${pos}</td>
+            <td><strong>${e.name}</strong></td>
+            <td>${e.pairs}/12</td>
+            <td>${timeStr}</td>
+            <td>${tag}</td>
+            <td style="color:var(--text-dim);font-size:0.8rem">${e.date}</td>
+        </tr>`;
+    }).join('');
+
+    container.innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th><th>Nombre</th><th>Parejas</th>
+                    <th>Tiempo</th><th>Estado</th><th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+        </table>`;
+}
+
+// ── Navigation ─────────────────────────────────────────────────────────
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (id === 'start-screen') renderRanking();
+}
+
+function goHome() {
+    clearInterval(timerInterval);
+    gameActive = false;
+    showScreen('start-screen');
+}
+
+// Init
+showScreen('start-screen');
+</script>
+</body>
+</html>
