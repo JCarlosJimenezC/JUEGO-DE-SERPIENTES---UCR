@@ -19,6 +19,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* evita zoom accidental en inputs en iOS */
+  -webkit-text-size-adjust: 100%;
 }
 
 .screen {
@@ -26,8 +28,12 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 960px;
+  max-width: 720px;   /* más estrecho → cartas más grandes en desktop */
   padding: .8rem 1rem;
+}
+
+@media (max-width: 600px) {
+  .screen { padding: .5rem .6rem; }
 }
 
 .btn {
