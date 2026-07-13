@@ -1,0 +1,27 @@
+export const ALL_SNAKES = [
+  // Venenosas
+  { nombre: 'Terciopelo',               cientifico: 'Bothrops asper',           venenosa: true  },
+  { nombre: 'Bocaracá u Oropel',        cientifico: 'Bothriechis schlegelii',   venenosa: true  },
+  { nombre: 'Bocaracá de Altura',       cientifico: 'Bothriechis lateralis',    venenosa: true  },
+  { nombre: 'Toboba',                   cientifico: 'Porthidium ophryomegas',   venenosa: true  },
+  { nombre: 'Mano de Piedra',           cientifico: 'Atropoides mexicanus',     venenosa: true  },
+  { nombre: 'Matabuey',                 cientifico: 'Lachesis stenophrys',      venenosa: true  },
+  { nombre: 'Cascabel Centroamericana', cientifico: 'Crotalus simus',           venenosa: true  },
+  { nombre: 'Corales Verdaderas',       cientifico: 'Micrurus spp.',            venenosa: true  },
+  { nombre: 'Serpiente Marina',         cientifico: 'Hydrophis platurus',       venenosa: true  },
+  // No venenosas
+  { nombre: 'Boa',                      cientifico: 'Boa imperator',            venenosa: false },
+  { nombre: 'Mica',                     cientifico: 'Spilotes pullatus',        venenosa: false },
+  { nombre: 'Bejuquilla',              cientifico: 'Imantodes cenchoa',        venenosa: false },
+  { nombre: 'Bejuquilla Verde',         cientifico: 'Leptophis mexicanus',      venenosa: false },
+  { nombre: 'Falsa Coral',             cientifico: 'Erythrolamprus mimus',     venenosa: false },
+  { nombre: 'Falsa Coral Rey',         cientifico: 'Lampropeltis micropholis', venenosa: false },
+  { nombre: 'Platanera',              cientifico: 'Ninia sebae',              venenosa: false },
+  { nombre: 'Ratonera',               cientifico: 'Senticolis triaspis',      venenosa: false },
+  { nombre: 'Sabanera Verde',          cientifico: 'Drymobius margaritiferus', venenosa: false },
+  { nombre: 'Sabanera Café',           cientifico: 'Drymarchon melanurus',     venenosa: false },
+  { nombre: 'Tamagá Verde',           cientifico: 'Dryadophis dorsalis',      venenosa: false },
+  { nombre: 'Culebras de Agua',        cientifico: 'Tretanorhinus spp.',       venenosa: false },
+  { nombre: 'Culebras Caracoleras',    cientifico: 'Sibon spp.',               venenosa: false },
+  { nombre: 'Culebras Come-babosas',   cientifico: 'Dipsas spp.',              venenosa: false },
+]
