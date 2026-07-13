@@ -1,7 +1,6 @@
 <template>
   <header class="site-header">
     <h1>🐍 Serpientes de Costa Rica</h1>
-    <p>Encuentra la Pareja &mdash; UCR</p>
   </header>
 
   <div class="content-area">

@@ -29,12 +29,14 @@
           <div class="card-face card-front" :class="card.venenosa ? 'ven' : 'nov'">
             <div class="card-img-wrap">
               <img
+                v-if="card.imagen"
                 class="card-img"
                 :src="imgSrc(card.imagen)"
                 :alt="card.nombre"
                 loading="lazy"
                 @error="onImgErr($event, card.venenosa)"
               />
+              <div v-else class="img-fallback">{{ card.venenosa ? '☠️' : '🌿' }}</div>
             </div>
             <div class="card-info">
               <span class="badge" :class="card.venenosa ? 'badge-ven' : 'badge-nov'">
@@ -61,11 +63,11 @@ const props = defineProps({
 defineEmits(['flip-card', 'go-home'])
 
 function imgSrc(filename) {
+  if (!filename) return null
   return new URL(`../assets/snakes/${filename}`, import.meta.url).href
 }
 
 function onImgErr(e, venenosa) {
-  /* Si la imagen no existe muestra el emoji como fallback */
   e.target.outerHTML = `<div class="img-fallback">${venenosa ? '☠️' : '🌿'}</div>`
 }
 </script>

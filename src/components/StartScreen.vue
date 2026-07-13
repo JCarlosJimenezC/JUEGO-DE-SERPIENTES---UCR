@@ -1,11 +1,5 @@
 <template>
   <div class="screen">
-    <div class="start-intro">
-      Encuentra las <strong>12 parejas</strong> de serpientes en <strong>3 minutos</strong>.<br />
-      Cada partida usa <strong>cartas aleatorias</strong> de la lista completa.<br /><br />
-      <span class="ven">⚠ Rojo = Venenosa</span>&nbsp;|&nbsp;<span class="nov">✓ Verde = No venenosa</span>
-    </div>
-
     <button class="btn btn-green" @click="$emit('start')">▶ Nueva Partida</button>
 
     <div class="ranking-header">
@@ -60,20 +54,6 @@ defineEmits(['start', 'clear-ranking'])
 </script>
 
 <style scoped>
-.start-intro {
-  background: rgba(30,64,32,.4);
-  border: 1px solid rgba(149,212,74,.2);
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  max-width: 540px;
-  text-align: center;
-  margin-bottom: 1.2rem;
-  color: var(--text-dim);
-  font-size: .95rem;
-  line-height: 1.6;
-}
-.start-intro .ven { color: #ff7070; }
-.start-intro .nov { color: var(--accent); }
 
 .ranking-header {
   display: flex;
